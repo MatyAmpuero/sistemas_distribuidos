@@ -1,0 +1,29 @@
+services:
+  server:
+    build:
+      context: ./server
+    image: kv-server
+    container_name: kvsrv
+    ports:
+      - "5050:5000"     # host:container (evitamos choque con AirPlay en macOS)
+    environment:
+      - DATA_DIR=/data
+    volumes:
+      - kv-data:/data
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    image: kv-client
+    container_name: kvcli
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "5000"
+    depends_on:
+      - server
+    stdin_open: true
+    tty: true
+
+volumes:
+  kv-data:
